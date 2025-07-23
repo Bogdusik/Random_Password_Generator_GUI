@@ -1,13 +1,14 @@
 import java.util.Random;
 
-// this class work as the backend and will generate thr password
+/**
+ * Generates random passwords based on selected character sets.
+ */
 public class PasswordGenerator {
-    // character pools
-    // these strings will hold the characters/symbols that we are going randomly pick to generate our password
-    public static final String LOWERCASE_CHARACTERS = "sdkjfnskdjfnsssfn";
-    public static final String UPPERCASE_CHARACTERS = "SDFKFIEJXHEUUDNWS";
-    public static final String NUMBERS = "12382348289";
-    public static final String SPECIAL_SYMBOLS = "!*4*£*(@(0£@)(${}304_+£)(@";
+    /** Characters used for password generation. */
+    public static final String LOWERCASE_CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
+    public static final String UPPERCASE_CHARACTERS = LOWERCASE_CHARACTERS.toUpperCase();
+    public static final String NUMBERS = "0123456789";
+    public static final String SPECIAL_SYMBOLS = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/";
 
     // the random class allows us to generate a random number which will be used to randomly choose the characters
     private final Random random;
@@ -25,10 +26,22 @@ public class PasswordGenerator {
 
         // string valid characters (toggle states)
         String validCharacters = "";
-        if(includeLowercase) validCharacters += UPPERCASE_CHARACTERS;
-        if(includeLowercase) validCharacters += LOWERCASE_CHARACTERS;
-        if(includeNumbers) validCharacters += NUMBERS;
-        if(includeSpecialSymbols) validCharacters += SPECIAL_SYMBOLS;
+        if (includeUppercase) {
+            validCharacters += UPPERCASE_CHARACTERS;
+        }
+        if (includeLowercase) {
+            validCharacters += LOWERCASE_CHARACTERS;
+        }
+        if (includeNumbers) {
+            validCharacters += NUMBERS;
+        }
+        if (includeSpecialSymbols) {
+            validCharacters += SPECIAL_SYMBOLS;
+        }
+
+        if (validCharacters.isEmpty()) {
+            return "";
+        }
 
         // build password
         for(int i = 0; i < length; i++){

@@ -2,27 +2,27 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-// reader the GUI components (frontend)
-// this class will inherit from JFrame class
+// Renders the GUI components (frontend)
+// This class inherits from JFrame
 public class PasswordGeneratorGUI extends JFrame {
-    private PasswordGenerator passwordGenerator;
+    private final PasswordGenerator passwordGenerator;
     public PasswordGeneratorGUI(){
-        // reader a frame and add a title
+        // create a frame and add a title
         super("Password Generator");
 
         // set the size of the GUI
         setSize(540, 570);
 
-        //prevent GUI from being able to resize
+        // prevent GUI from being resized
         setResizable(false);
 
-        // we will be set layout to be null to have control over position and size of uor components in our app
+        // use absolute positioning for all components
         setLayout(null);
 
         // terminate the program when the GUI is closed (ends the process)
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        //center the GUI  to the screen
+        // center the GUI on the screen
         setLocationRelativeTo(null);
 
         // init password generator
@@ -35,7 +35,7 @@ public class PasswordGeneratorGUI extends JFrame {
 
     private void addGuiComponents(){
         // create title text
-        JLabel titleLabel = new JLabel("Password Generetor");;
+        JLabel titleLabel = new JLabel("Password Generator");
 
         // increase the font size and make it bold
         titleLabel.setFont(new Font("Dialog", Font.BOLD, 32));
@@ -52,11 +52,11 @@ public class PasswordGeneratorGUI extends JFrame {
         //create result text area
         JTextArea passwordOutput = new JTextArea();
 
-        // prevent editing the text are
+        // prevent editing the text area
         passwordOutput.setEditable(false);
         passwordOutput.setFont(new Font("Dialog", Font.BOLD, 32));
 
-        // add scrollility in case output becomes too big
+        // add scrollability in case output becomes too big
         JScrollPane passwordOutputPane = new JScrollPane(passwordOutput);
         passwordOutputPane.setBounds(25, 97, 479, 76);
 
@@ -71,7 +71,7 @@ public class PasswordGeneratorGUI extends JFrame {
         passwordLengthLabel.setBounds(25,215,272,39);
         add(passwordLengthLabel);
 
-        // create passsword length input
+        // create password length input
         JTextArea passwordLengthInputArea = new JTextArea();
         passwordLengthInputArea.setFont(new Font("Dialog", Font.PLAIN, 32));
         passwordLengthInputArea.setBorder((BorderFactory.createLineBorder(Color.BLACK)));
@@ -110,15 +110,26 @@ public class PasswordGeneratorGUI extends JFrame {
         generateButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // validation: generate a password only when length > 0 and one of the toggle button is pressed
+                // generate a password only when length > 0 and one toggle button is pressed
                 if(passwordLengthInputArea.getText().length() <= 0) return;
                 boolean anyToggleSelected = lowercaseToggle.isSelected() || uppercaseToggle.isSelected() || numbersToggle.isSelected() || symbolToggle.isSelected();
 
                 // generate password
-                // convert the text to an integer value
-                int passwordLength = Integer.parseInt(passwordLengthInputArea.getText());
-                if(anyToggleSelected){
-                    String generatedPassword = passwordGenerator.generatePassword(passwordLength, uppercaseToggle.isSelected(), lowercaseToggle.isSelected(), numbersToggle.isSelected(), symbolToggle.isSelected());
+                int passwordLength;
+                try {
+                    passwordLength = Integer.parseInt(passwordLengthInputArea.getText());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(PasswordGeneratorGUI.this, "Invalid length", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (anyToggleSelected) {
+                    String generatedPassword = passwordGenerator.generatePassword(
+                            passwordLength,
+                            uppercaseToggle.isSelected(),
+                            lowercaseToggle.isSelected(),
+                            numbersToggle.isSelected(),
+                            symbolToggle.isSelected());
 
                     // display password back to the user
                     passwordOutput.setText(generatedPassword);
