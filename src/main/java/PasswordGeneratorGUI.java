@@ -110,29 +110,76 @@ public class PasswordGeneratorGUI extends JFrame {
         generateButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // generate a password only when length > 0 and one toggle button is pressed
-                if(passwordLengthInputArea.getText().length() <= 0) return;
-                boolean anyToggleSelected = lowercaseToggle.isSelected() || uppercaseToggle.isSelected() || numbersToggle.isSelected() || symbolToggle.isSelected();
-
-                // generate password
-                int passwordLength;
-                try {
-                    passwordLength = Integer.parseInt(passwordLengthInputArea.getText());
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(PasswordGeneratorGUI.this, "Invalid length", "Error", JOptionPane.ERROR_MESSAGE);
+                // Validate input length
+                String lengthText = passwordLengthInputArea.getText().trim();
+                if (lengthText.isEmpty()) {
+                    JOptionPane.showMessageDialog(
+                        PasswordGeneratorGUI.this, 
+                        "Please enter a password length", 
+                        "Input Required", 
+                        JOptionPane.WARNING_MESSAGE
+                    );
                     return;
                 }
 
-                if (anyToggleSelected) {
-                    String generatedPassword = passwordGenerator.generatePassword(
-                            passwordLength,
-                            uppercaseToggle.isSelected(),
-                            lowercaseToggle.isSelected(),
-                            numbersToggle.isSelected(),
-                            symbolToggle.isSelected());
+                // Parse and validate password length
+                int passwordLength;
+                try {
+                    passwordLength = Integer.parseInt(lengthText);
+                    if (passwordLength <= 0) {
+                        JOptionPane.showMessageDialog(
+                            PasswordGeneratorGUI.this, 
+                            "Password length must be greater than 0", 
+                            "Invalid Input", 
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(
+                        PasswordGeneratorGUI.this, 
+                        "Please enter a valid number for password length", 
+                        "Invalid Input", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
 
-                    // display password back to the user
+                // Check if at least one character type is selected
+                boolean anyToggleSelected = lowercaseToggle.isSelected() 
+                    || uppercaseToggle.isSelected() 
+                    || numbersToggle.isSelected() 
+                    || symbolToggle.isSelected();
+
+                if (!anyToggleSelected) {
+                    JOptionPane.showMessageDialog(
+                        PasswordGeneratorGUI.this, 
+                        "Please select at least one character type", 
+                        "Selection Required", 
+                        JOptionPane.WARNING_MESSAGE
+                    );
+                    return;
+                }
+
+                // Generate password
+                try {
+                    String generatedPassword = passwordGenerator.generatePassword(
+                        passwordLength,
+                        uppercaseToggle.isSelected(),
+                        lowercaseToggle.isSelected(),
+                        numbersToggle.isSelected(),
+                        symbolToggle.isSelected()
+                    );
+
+                    // Display password to the user
                     passwordOutput.setText(generatedPassword);
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(
+                        PasswordGeneratorGUI.this, 
+                        ex.getMessage(), 
+                        "Generation Error", 
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
             }
         });
